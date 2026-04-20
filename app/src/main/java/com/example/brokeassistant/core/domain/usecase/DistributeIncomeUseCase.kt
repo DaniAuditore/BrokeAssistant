@@ -4,8 +4,9 @@ import com.example.brokeassistant.core.domain.model.Category
 import com.example.brokeassistant.core.domain.model.Transaction
 import com.example.brokeassistant.core.domain.model.TransactionType
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class DistributeIncomeUseCase {
+class DistributeIncomeUseCase @Inject constructor() {
     operator fun invoke(
         amountInCents: Long,
         description: String,
