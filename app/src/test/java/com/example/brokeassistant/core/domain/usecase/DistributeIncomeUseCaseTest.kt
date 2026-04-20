@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 class DistributeIncomeUseCaseTest {
 
-    private lateinit val useCase: DistributeIncomeUseCase
+    private lateinit var useCase: DistributeIncomeUseCase
     private val date = LocalDateTime.of(2023, 1, 1, 10, 0)
 
     @Before

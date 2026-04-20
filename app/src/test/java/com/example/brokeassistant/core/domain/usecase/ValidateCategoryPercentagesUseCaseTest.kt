@@ -8,7 +8,7 @@ import org.junit.Test
 
 class ValidateCategoryPercentagesUseCaseTest {
 
-    private lateinit val useCase: ValidateCategoryPercentagesUseCase
+    private lateinit var useCase: ValidateCategoryPercentagesUseCase
 
     @Before
     fun setUp() {
