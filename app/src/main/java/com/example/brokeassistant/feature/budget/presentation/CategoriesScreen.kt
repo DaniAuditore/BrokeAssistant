@@ -17,9 +17,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.brokeassistant.R
 import com.example.brokeassistant.core.domain.model.Category
 import kotlinx.coroutines.launch
 
@@ -37,10 +39,10 @@ fun CategoriesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Categories Management") },
+                title = { Text(stringResource(R.string.string_categories_management)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.string_back))
                     }
                 }
             )
@@ -61,10 +63,10 @@ fun CategoriesScreen(
                 )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Total Percentage: ${state.totalPercentage}%", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.string_total_percentage, state.totalPercentage)), style = MaterialTheme.typography.titleMedium)
                     if (state.totalPercentage != 100) {
                         Text(
-                            text = "Total must be exactly 100%",
+                            text = stringResource(R.string.string_total_must_be_100),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -92,7 +94,7 @@ fun CategoriesScreen(
                                     Text("${category.percentage}%", style = MaterialTheme.typography.bodyLarge)
                                     if (state.categories.size > 1) {
                                         IconButton(onClick = { categoryToDelete = category }) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.string_delete))
                                         }
                                     }
                                 }
@@ -113,11 +115,11 @@ fun CategoriesScreen(
             OutlinedTextField(
                 value = state.newCategoryName,
                 onValueChange = { viewModel.onIntent(CategoriesIntent.UpdateNewCategoryName(it)) },
-                label = { Text("Category Name") },
+                label = { Text(stringResource(R.string.string_category_name)) },
                 isError = isNameInvalid,
                 supportingText = {
                     if (isNameInvalid) {
-                        Text("Category name cannot be empty")
+                        Text(stringResource(R.string.string_category_name_empty))
                     }
                 },
                 modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
@@ -128,14 +130,14 @@ fun CategoriesScreen(
             OutlinedTextField(
                 value = state.newCategoryPercentage,
                 onValueChange = { viewModel.onIntent(CategoriesIntent.UpdateNewCategoryPercentage(it)) },
-                label = { Text("Percentage") },
+                label = { Text(stringResource(R.string.string_percentage)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isError = isPercentageInvalid || state.totalPercentage != 100,
                 supportingText = {
                     if (isPercentageInvalid) {
-                        Text("Enter a valid percentage")
+                        Text(stringResource(R.string.string_percentage_invalid))
                     } else if (state.totalPercentage != 100) {
-                        Text("Total percentage must be 100% to save", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.string_percentage_must_be_100), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
@@ -148,7 +150,7 @@ fun CategoriesScreen(
                 enabled = state.newCategoryName.isNotBlank() && !isPercentageInvalid && state.newCategoryPercentage.isNotBlank(),
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Text("Add Category")
+                Text(stringResource(R.string.add_category))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -157,14 +159,14 @@ fun CategoriesScreen(
                 onClick = {
                     viewModel.onIntent(CategoriesIntent.SaveCategories)
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar("Categories saved successfully")
+                        snackbarHostState.showSnackbar(stringResource(R.string.string_categories_saved))
                     }
                     onNavigateBack()
                 },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Text("Save & Back")
+                Text(stringResource(R.string.string_save_and_back))
             }
         }
     }
@@ -176,10 +178,10 @@ fun CategoriesScreen(
 
         AlertDialog(
             onDismissRequest = { categoryToDelete = null },
-            title = { Text("Delete Category") },
+            title = { Text(stringResource(R.string.delete_category)) },
             text = {
                 Column {
-                    Text("Deleting ${categoryToDelete?.name} requires reassigning its transactions and percentage to another category.")
+                    Text(stringResource(R.string.string_deleting_requires_fallback, categoryToDelete?.name ?: ""))
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     ExposedDropdownMenuBox(
@@ -187,10 +189,10 @@ fun CategoriesScreen(
                         onExpandedChange = { isDropdownExpanded = !isDropdownExpanded }
                     ) {
                         OutlinedTextField(
-                            value = fallbackCategory?.name ?: "Select a fallback",
+                            value = fallbackCategory?.name ?: stringResource(R.string.string_select_fallback),
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Fallback Category") },
+                            label = { Text(stringResource(R.string.string_fallback_category)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) },
                             modifier = Modifier.menuAnchor().fillMaxWidth()
                         )
@@ -223,12 +225,12 @@ fun CategoriesScreen(
                     },
                     enabled = fallbackCategory != null
                 ) {
-                    Text("Confirm")
+                    Text(stringResource(R.string.string_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { categoryToDelete = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.string_cancel))
                 }
             }
         )
