@@ -134,11 +134,12 @@ fun TransactionsScreen(
 
             val isSaveEnabled = state.amount.isNotBlank() && !isAmountInvalid && state.description.isNotBlank() && (state.transactionType == TransactionType.INCOME || state.selectedCategory != null)
 
+            val savedMsg = stringResource(R.string.string_transaction_saved)
             Button(
                 onClick = {
                     viewModel.onIntent(TransactionsIntent.AddTransaction)
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(stringResource(R.string.string_transaction_saved))
+                        snackbarHostState.showSnackbar(savedMsg)
                     }
                     onNavigateBack()
                 },

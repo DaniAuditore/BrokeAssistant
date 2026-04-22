@@ -63,7 +63,7 @@ fun CategoriesScreen(
                 )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(stringResource(R.string.string_total_percentage, state.totalPercentage)), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.string_total_percentage, state.totalPercentage), style = MaterialTheme.typography.titleMedium)
                     if (state.totalPercentage != 100) {
                         Text(
                             text = stringResource(R.string.string_total_must_be_100),
@@ -155,11 +155,12 @@ fun CategoriesScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             
+            val savedMsg = stringResource(R.string.string_categories_saved)
             Button(
                 onClick = {
                     viewModel.onIntent(CategoriesIntent.SaveCategories)
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(stringResource(R.string.string_categories_saved))
+                        snackbarHostState.showSnackbar(savedMsg)
                     }
                     onNavigateBack()
                 },

@@ -2,9 +2,9 @@ package com.example.brokeassistant
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,12 +32,11 @@ import com.example.brokeassistant.feature.onboarding.presentation.OnboardingScre
 import com.example.brokeassistant.feature.onboarding.presentation.OnboardingViewModel
 import com.example.brokeassistant.feature.transactions.presentation.TransactionsScreen
 import com.example.brokeassistant.feature.transactions.presentation.TransactionsViewModel
-import com.example.brokeassistant.R
 
-sealed class Screen(val route: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val labelResId: Int) {
-    object Dashboard : Screen("dashboard", Icons.Filled.Home, R.string.dashboard_title)
-    object Transactions : Screen("transactions", Icons.Filled.List, R.string.transactions_title)
-    object Categories : Screen("categories", Icons.Filled.Category, R.string.categories_title)
+sealed class Screen(val route: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val label: String) {
+    object Dashboard : Screen("dashboard", Icons.Filled.Home, "Dashboard")
+    object Transactions : Screen("transactions", Icons.Filled.List, "Transactions")
+    object Categories : Screen("categories", Icons.Filled.Settings, "Categories")
 }
 
 @Composable
@@ -65,8 +63,8 @@ fun BrokeAppNavigation() {
                     items.forEach { screen ->
                         val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
                         NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = stringResource(screen.labelResId)) },
-                            label = { Text(stringResource(screen.labelResId)) },
+                            icon = { Icon(screen.icon, contentDescription = screen.label) },
+                            label = { Text(screen.label) },
                             selected = selected,
                             onClick = {
                                 navController.navigate(screen.route) {
