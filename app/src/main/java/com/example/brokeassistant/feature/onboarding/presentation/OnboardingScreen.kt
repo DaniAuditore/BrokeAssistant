@@ -1,25 +1,23 @@
 package com.example.brokeassistant.feature.onboarding.presentation
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
     onNavigateToDashboard: () -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+    val currencies = listOf("USD", "EUR", "GBP", "MXN", "CLP", "ARS", "COP", "PEN")
 
     Column(
         modifier = Modifier
@@ -36,12 +34,35 @@ fun OnboardingScreen(
         )
         Spacer(modifier = Modifier.height(32.dp))
         
-        OutlinedTextField(
-            value = state.selectedCurrency,
-            onValueChange = { viewModel.onIntent(OnboardingIntent.SelectCurrency(it)) },
-            label = { Text("Currency (e.g., USD, EUR)") },
-            modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
-        )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = state.selectedCurrency,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Currency") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                modifier = Modifier.menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                currencies.forEach { currency ->
+                    DropdownMenuItem(
+                        text = { Text(text = currency) },
+                        onClick = {
+                            viewModel.onIntent(OnboardingIntent.SelectCurrency(currency))
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
         
         Spacer(modifier = Modifier.height(32.dp))
         Button(
