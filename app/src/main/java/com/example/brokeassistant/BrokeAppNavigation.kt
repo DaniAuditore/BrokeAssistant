@@ -9,9 +9,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -48,8 +52,11 @@ fun BrokeAppNavigation() {
     )
     
     val showBottomBar = currentDestination?.route in items.map { it.route }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar {
@@ -110,7 +117,8 @@ fun BrokeAppNavigation() {
                     onNavigateBack = {
                         navController.popBackStack()
                     },
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    snackbarHostState = snackbarHostState
                 )
             }
             
@@ -120,7 +128,8 @@ fun BrokeAppNavigation() {
                     onNavigateBack = {
                         navController.popBackStack()
                     },
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    snackbarHostState = snackbarHostState
                 )
             }
         }
