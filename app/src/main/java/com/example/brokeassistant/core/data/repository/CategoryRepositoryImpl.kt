@@ -64,4 +64,8 @@ class CategoryRepositoryImpl @Inject constructor(
         )
         categoryDao.deleteCategory(entity)
     }
+
+    override suspend fun deleteCategoryWithFallback(deletedId: Long, fallbackId: Long) {
+        categoryDao.deleteCategoryWithFallback(deletedId.toInt(), fallbackId.toInt())
+    }
 }

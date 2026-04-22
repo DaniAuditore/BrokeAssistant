@@ -25,6 +25,7 @@ sealed class CategoriesIntent {
     data class UpdateNewCategoryName(val name: String) : CategoriesIntent()
     data class UpdateNewCategoryPercentage(val percentage: String) : CategoriesIntent()
     data class UpdatePercentage(val categoryId: Long, val percentage: Int) : CategoriesIntent()
+    data class DeleteCategoryWithFallback(val deletedId: Long, val fallbackId: Long) : CategoriesIntent()
     object AddCategory : CategoriesIntent()
     object SaveCategories : CategoriesIntent()
 }
@@ -82,6 +83,14 @@ class CategoriesViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+            }
+            is CategoriesIntent.DeleteCategoryWithFallback -> {
+                viewModelScope.launch {
+                    categoryRepository.deleteCategoryWithFallback(
+                        deletedId = intent.deletedId,
+                        fallbackId = intent.fallbackId
+                    )
                 }
             }
         }

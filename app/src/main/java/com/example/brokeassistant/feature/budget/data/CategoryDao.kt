@@ -30,4 +30,23 @@ interface CategoryDao {
 
     @Query("SELECT SUM(percentage) FROM categories")
     suspend fun getTotalPercentage(): Int?
+
+    @Query("UPDATE transactions SET categoryId = :fallbackId WHERE categoryId = :deletedId")
+    suspend fun reassignTransactions(deletedId: Int, fallbackId: Int)
+
+    @androidx.room.Transaction
+    suspend fun deleteCategoryWithFallback(deletedId: Int, fallbackId: Int) {
+        val deletedCategory = getCategoryById(deletedId) ?: return
+        val fallbackCategory = getCategoryById(fallbackId) ?: return
+
+        // Merge percentages
+        val newPercentage = fallbackCategory.percentage + deletedCategory.percentage
+        updateCategory(fallbackCategory.copy(percentage = newPercentage))
+
+        // Reassign transactions
+        reassignTransactions(deletedId, fallbackId)
+
+        // Delete the category
+        deleteCategory(deletedCategory)
+    }
 }
