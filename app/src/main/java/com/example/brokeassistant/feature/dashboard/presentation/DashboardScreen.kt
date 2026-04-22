@@ -14,6 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,12 +25,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.brokeassistant.R
 import com.example.brokeassistant.core.util.CsvExporter
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +67,19 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Dashboard") }
+                title = { Text(stringResource(R.string.dashboard_title)) },
+                actions = {
+                    IconButton(onClick = {
+                        val currentLocales = AppCompatDelegate.getApplicationLocales()
+                        val newLanguage = if (currentLocales.isEmpty || currentLocales.get(0)?.language == "en") "es" else "en"
+                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(newLanguage))
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Translate,
+                            contentDescription = stringResource(R.string.toggle_language)
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -78,7 +98,7 @@ fun DashboardScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Total Available",
+                        text = stringResource(R.string.dashboard_balance),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

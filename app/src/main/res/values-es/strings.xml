@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BrokeAssistant</string>
+    <string name="language_en">Inglés</string>
+    <string name="language_es">Español</string>
+    <string name="toggle_language">Cambiar Idioma</string>
+    <!-- Onboarding -->
+    <string name="onboarding_title">Bienvenido a BrokeAssistant</string>
+    <string name="onboarding_subtitle">Maneja tu presupuesto sabiamente.</string>
+    <string name="onboarding_button">Empezar</string>
+    <!-- Dashboard -->
+    <string name="dashboard_title">Panel de Control</string>
+    <string name="dashboard_balance">Balance Total</string>
+    <string name="dashboard_expenses">Gastos</string>
+    <string name="dashboard_income">Ingresos</string>
+    <!-- Categories -->
+    <string name="categories_title">Categorías</string>
+    <string name="add_category">Agregar Categoría</string>
+    <string name="delete_category">Eliminar Categoría</string>
+    <!-- Transactions -->
+    <string name="transactions_title">Transacciones</string>
+    <string name="add_transaction">Agregar Transacción</string>
+</resources>
