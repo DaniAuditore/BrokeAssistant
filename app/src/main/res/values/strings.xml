@@ -4,20 +4,58 @@
     <string name="language_en">English</string>
     <string name="language_es">Español</string>
     <string name="toggle_language">Toggle Language</string>
+
     <!-- Onboarding -->
-    <string name="onboarding_title">Welcome to BrokeAssistant</string>
+    <string name="onboarding_title">Welcome to BrokeAssistant!</string>
     <string name="onboarding_subtitle">Manage your budget wisely.</string>
     <string name="onboarding_button">Get Started</string>
+    <string name="onboarding_currency_label">Currency</string>
+
     <!-- Dashboard -->
     <string name="dashboard_title">Dashboard</string>
     <string name="dashboard_balance">Total Balance</string>
     <string name="dashboard_expenses">Expenses</string>
     <string name="dashboard_income">Income</string>
+
     <!-- Categories -->
     <string name="categories_title">Categories</string>
     <string name="add_category">Add Category</string>
     <string name="delete_category">Delete Category</string>
+
+    <!-- Navigation -->
+    <string name="string_back">Back</string>
+    <string name="string_cancel">Cancel</string>
+    <string name="string_confirm">Confirm</string>
+    <string name="string_add">Add</string>
+
     <!-- Transactions -->
     <string name="transactions_title">Transactions</string>
     <string name="add_transaction">Add Transaction</string>
+    <string name="string_amount">Amount</string>
+    <string name="string_amount_invalid">Please enter a valid amount greater than 0</string>
+    <string name="string_amount_required">Amount is required</string>
+    <string name="string_description">Description</string>
+    <string name="string_description_empty">Description cannot be empty</string>
+    <string name="string_select_category">Select Category</string>
+    <string name="string_category">Category</string>
+    <string name="string_save_transaction">Save Transaction</string>
+    <string name="string_transaction_saved">Transaction saved successfully</string>
+    <string name="string_type_expense">Expense</string>
+    <string name="string_type_income">Income</string>
+
+    <!-- Categories Screen -->
+    <string name="string_categories_management">Categories Management</string>
+    <string name="string_total_percentage">Total Percentage: %1$d%%</string>
+    <string name="string_total_must_be_100">Total must be exactly 100%%</string>
+    <string name="string_category_name">Category Name</string>
+    <string name="string_category_name_empty">Category name cannot be empty</string>
+    <string name="string_percentage">Percentage</string>
+    <string name="string_percentage_invalid">Enter a valid percentage</string>
+    <string name="string_percentage_must_be_100">Total percentage must be 100%% to save</string>
+    <string name="string_delete">Delete</string>
+    <string name="string_save_and_back">Save &amp; Back</string>
+    <string name="string_categories_saved">Categories saved successfully</string>
+    <string name="string_deleting_requires_fallback">Deleting %1$s requires reassigning its transactions and percentage to another category.</string>
+    <string name="string_select_fallback">Select a fallback</string>
+    <string name="string_fallback_category">Fallback Category</string>
 </resources>
