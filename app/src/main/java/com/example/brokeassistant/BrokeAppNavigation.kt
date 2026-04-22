@@ -2,9 +2,9 @@ package com.example.brokeassistant
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountBalanceWallet
-import androidx.compose.material.icons.rounded.Category
-import androidx.compose.material.icons.rounded.Dashboard
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -34,9 +34,9 @@ import com.example.brokeassistant.feature.transactions.presentation.Transactions
 import com.example.brokeassistant.feature.transactions.presentation.TransactionsViewModel
 
 sealed class Screen(val route: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val label: String) {
-    object Dashboard : Screen("dashboard", Icons.Rounded.Dashboard, "Dashboard")
-    object Transactions : Screen("transactions", Icons.Rounded.AccountBalanceWallet, "Transactions")
-    object Categories : Screen("categories", Icons.Rounded.Category, "Categories")
+    object Dashboard : Screen("dashboard", Icons.Filled.Home, "Dashboard")
+    object Transactions : Screen("transactions", Icons.Filled.List, "Transactions")
+    object Categories : Screen("categories", Icons.Filled.Build, "Categories")
 }
 
 @Composable

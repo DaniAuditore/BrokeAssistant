@@ -86,7 +86,7 @@ fun CategoriesScreen(
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(
-                                progress = { category.percentage / 100f },
+                                progress = category.percentage / 100f,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }
