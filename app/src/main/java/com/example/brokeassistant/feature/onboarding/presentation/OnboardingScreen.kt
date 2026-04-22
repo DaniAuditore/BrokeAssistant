@@ -5,9 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.brokeassistant.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +29,7 @@ fun OnboardingScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome to BrokeAssistant!",
+            text = stringResource(R.string.onboarding_title),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.primary
@@ -43,7 +45,7 @@ fun OnboardingScreen(
                 value = state.selectedCurrency,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Currency") },
+                label = { Text(stringResource(R.string.onboarding_currency_label)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                 modifier = Modifier.menuAnchor()
@@ -72,7 +74,7 @@ fun OnboardingScreen(
             },
             modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
-            Text("Get Started")
+            Text(stringResource(R.string.onboarding_button))
         }
     }
 }
