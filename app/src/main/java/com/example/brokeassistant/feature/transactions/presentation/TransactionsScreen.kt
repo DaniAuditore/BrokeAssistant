@@ -13,15 +13,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.brokeassistant.core.domain.model.TransactionType
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(
     onNavigateBack: () -> Unit,
-    viewModel: TransactionsViewModel = hiltViewModel()
+    viewModel: TransactionsViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState
 ) {
     val state by viewModel.state.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -60,20 +63,36 @@ fun TransactionsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val isAmountInvalid = state.amount.isNotBlank() && (state.amount.toDoubleOrNull() == null || state.amount.toDouble() <= 0)
             OutlinedTextField(
                 value = state.amount,
                 onValueChange = { viewModel.onIntent(TransactionsIntent.UpdateAmount(it)) },
                 label = { Text("Amount") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = isAmountInvalid,
+                supportingText = {
+                    if (isAmountInvalid) {
+                        Text("Please enter a valid amount greater than 0")
+                    } else if (state.amount.isBlank()) {
+                        Text("Amount is required")
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            val isDescriptionInvalid = state.description.isBlank() && state.amount.isNotBlank()
             OutlinedTextField(
                 value = state.description,
                 onValueChange = { viewModel.onIntent(TransactionsIntent.UpdateDescription(it)) },
                 label = { Text("Description") },
+                isError = isDescriptionInvalid,
+                supportingText = {
+                    if (isDescriptionInvalid) {
+                        Text("Description cannot be empty")
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
             )
 
@@ -111,11 +130,17 @@ fun TransactionsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            val isSaveEnabled = state.amount.isNotBlank() && !isAmountInvalid && state.description.isNotBlank() && (state.transactionType == TransactionType.INCOME || state.selectedCategory != null)
+
             Button(
                 onClick = {
                     viewModel.onIntent(TransactionsIntent.AddTransaction)
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Transaction saved successfully")
+                    }
                     onNavigateBack()
                 },
+                enabled = isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
