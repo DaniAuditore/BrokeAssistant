@@ -18,12 +18,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,15 @@ import java.util.Locale
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
@@ -43,7 +54,7 @@ fun DashboardScreen(
     onNavigateToTransactions: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     
@@ -67,7 +78,7 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.dashboard_title)) },
+                title = { Text(stringResource(R.string.dashboard_title), fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = {
                         val currentLocales = AppCompatDelegate.getApplicationLocales()
@@ -81,6 +92,15 @@ fun DashboardScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToTransactions,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_transaction))
+            }
         }
     ) { paddingValues ->
         Column(
@@ -92,7 +112,14 @@ fun DashboardScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             
-            ElevatedCard(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            // Balance Card con jerarquía visual mejorada (Gestalt: Contraste)
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
                 Column(
                     modifier = Modifier.padding(24.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -100,63 +127,80 @@ fun DashboardScreen(
                     Text(
                         text = stringResource(R.string.dashboard_balance),
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = currencyFormat.format(state.totalAvailableInCents / 100.0),
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 36.sp
+                        )
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                "Balances by Category",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.align(Alignment.Start)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Balances by Category",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                TextButton(onClick = { exportLauncher.launch("brokeassistant_export.csv") }) {
+                    Text("Export CSV")
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
 
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.categoryBalances) { balance ->
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+            if (state.categoryBalances.isEmpty()) {
+                // Empty State (Heurística: Visibilidad del estado)
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    Text(
+                        "No data yet. Start by adding a transaction!",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 80.dp) // Espacio para el FAB
+                ) {
+                    items(state.categoryBalances) { balance ->
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = balance.category.name,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = currencyFormat.format(balance.balanceInCents / 100.0),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = balance.category.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = currencyFormat.format(balance.balanceInCents / 100.0),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
-                }
-                
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { exportLauncher.launch("brokeassistant_export.csv") },
-                        modifier = Modifier.fillMaxWidth().height(48.dp)
-                    ) {
-                        Text("Export Data to CSV")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
     }
 }
+
