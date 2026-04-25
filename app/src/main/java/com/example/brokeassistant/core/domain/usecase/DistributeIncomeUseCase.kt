@@ -3,15 +3,18 @@ package com.example.brokeassistant.core.domain.usecase
 import com.example.brokeassistant.core.domain.model.Category
 import com.example.brokeassistant.core.domain.model.Transaction
 import com.example.brokeassistant.core.domain.model.TransactionType
+import java.time.Clock
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-class DistributeIncomeUseCase @Inject constructor() {
+class DistributeIncomeUseCase @Inject constructor(
+    private val clock: Clock
+) {
     operator fun invoke(
         amountInCents: Long,
         description: String,
         categories: List<Category>,
-        date: LocalDateTime = LocalDateTime.now()
+        date: LocalDateTime = LocalDateTime.now(clock)
     ): List<Transaction> {
         require(amountInCents > 0) { "Income amount must be greater than zero" }
         require(categories.isNotEmpty()) { "Categories list cannot be empty" }

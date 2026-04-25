@@ -5,16 +5,22 @@ import com.example.brokeassistant.core.domain.model.TransactionType
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class DistributeIncomeUseCaseTest {
 
     private lateinit var useCase: DistributeIncomeUseCase
+    private val zoneId = ZoneId.systemDefault()
     private val date = LocalDateTime.of(2023, 1, 1, 10, 0)
+    private val instant = date.atZone(zoneId).toInstant()
+    private val clock = Clock.fixed(instant, zoneId)
 
     @Before
     fun setUp() {
-        useCase = DistributeIncomeUseCase()
+        useCase = DistributeIncomeUseCase(clock)
     }
 
     @Test

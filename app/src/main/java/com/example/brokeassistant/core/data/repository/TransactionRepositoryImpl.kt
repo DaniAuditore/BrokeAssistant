@@ -7,12 +7,14 @@ import com.example.brokeassistant.feature.transactions.data.TransactionDao
 import com.example.brokeassistant.feature.transactions.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val clock: Clock
 ) : TransactionRepository {
     override fun getAllTransactions(): Flow<List<Transaction>> {
         return transactionDao.getAllTransactions().map { list ->
@@ -49,7 +51,7 @@ class TransactionRepositoryImpl @Inject constructor(
             type = TransactionType.valueOf(type),
             amountInCents = amountInCents,
             description = description,
-            date = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDateTime()
+            date = Instant.ofEpochMilli(dateMillis).atZone(clock.zone).toLocalDateTime()
         )
     }
 
@@ -59,7 +61,7 @@ class TransactionRepositoryImpl @Inject constructor(
             amountInCents = amountInCents,
             description = description,
             categoryId = categoryId?.toInt(),
-            dateMillis = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            dateMillis = date.atZone(clock.zone).toInstant().toEpochMilli(),
             type = type.name
         )
     }
