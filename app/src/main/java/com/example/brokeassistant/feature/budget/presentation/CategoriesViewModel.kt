@@ -7,8 +7,10 @@ import com.example.brokeassistant.core.domain.repository.CategoryRepository
 import com.example.brokeassistant.core.domain.usecase.ValidateCategoryPercentagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,46 +38,68 @@ class CategoriesViewModel @Inject constructor(
     private val validateCategoryPercentagesUseCase: ValidateCategoryPercentagesUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CategoriesState())
-    val state: StateFlow<CategoriesState> = _state.asStateFlow()
+    private val _userInputs = MutableStateFlow(
+        UserInputs(
+            newCategoryName = "",
+            newCategoryPercentage = ""
+        )
+    )
 
-    init {
-        viewModelScope.launch {
-            categoryRepository.getAllCategories().collect { categories ->
-                updateStateWithCategories(categories)
-            }
-        }
-    }
+    private data class UserInputs(
+        val newCategoryName: String,
+        val newCategoryPercentage: String
+    )
+
+    val state: StateFlow<CategoriesState> = combine(
+        categoryRepository.getAllCategories(),
+        _userInputs
+    ) { categories, inputs ->
+        val total = categories.sumOf { it.percentage }
+        val isValid = validateCategoryPercentagesUseCase(categories)
+        CategoriesState(
+            categories = categories,
+            totalPercentage = total,
+            isSaveEnabled = isValid,
+            newCategoryName = inputs.newCategoryName,
+            newCategoryPercentage = inputs.newCategoryPercentage
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = CategoriesState()
+    )
 
     fun onIntent(intent: CategoriesIntent) {
         when (intent) {
             is CategoriesIntent.UpdateNewCategoryName -> {
-                _state.update { it.copy(newCategoryName = intent.name) }
+                _userInputs.update { it.copy(newCategoryName = intent.name) }
             }
             is CategoriesIntent.UpdateNewCategoryPercentage -> {
-                _state.update { it.copy(newCategoryPercentage = intent.percentage) }
+                _userInputs.update { it.copy(newCategoryPercentage = intent.percentage) }
             }
             is CategoriesIntent.UpdatePercentage -> {
-                val updatedCategories = _state.value.categories.map {
-                    if (it.id == intent.categoryId) it.copy(percentage = intent.percentage) else it
+                viewModelScope.launch {
+                    val category = state.value.categories.find { it.id == intent.categoryId }
+                    category?.let {
+                        categoryRepository.updateCategory(it.copy(percentage = intent.percentage))
+                    }
                 }
-                updateStateWithCategories(updatedCategories)
             }
             CategoriesIntent.AddCategory -> {
-                val name = _state.value.newCategoryName
-                val pct = _state.value.newCategoryPercentage.toIntOrNull() ?: 0
+                val name = _userInputs.value.newCategoryName
+                val pct = _userInputs.value.newCategoryPercentage.toIntOrNull() ?: 0
                 if (name.isNotBlank()) {
-                    val newCat = Category(name = name, percentage = pct)
-                    val updatedCategories = _state.value.categories + newCat
-                    updateStateWithCategories(updatedCategories)
-                    _state.update { it.copy(newCategoryName = "", newCategoryPercentage = "") }
+                    viewModelScope.launch {
+                        categoryRepository.insertCategory(Category(name = name, percentage = pct))
+                        _userInputs.update { it.copy(newCategoryName = "", newCategoryPercentage = "") }
+                    }
                 }
             }
             CategoriesIntent.SaveCategories -> {
                 viewModelScope.launch {
-                    val isValid = validateCategoryPercentagesUseCase(_state.value.categories)
+                    val isValid = validateCategoryPercentagesUseCase(state.value.categories)
                     if (isValid) {
-                        _state.value.categories.forEach { category ->
+                        state.value.categories.forEach { category ->
                             if (category.id == 0L) {
                                 categoryRepository.insertCategory(category)
                             } else {
@@ -93,18 +117,6 @@ class CategoriesViewModel @Inject constructor(
                     )
                 }
             }
-        }
-    }
-
-    private fun updateStateWithCategories(categories: List<Category>) {
-        val total = categories.sumOf { it.percentage }
-        val isValid = validateCategoryPercentagesUseCase(categories)
-        _state.update { 
-            it.copy(
-                categories = categories, 
-                totalPercentage = total, 
-                isSaveEnabled = isValid
-            ) 
         }
     }
 }

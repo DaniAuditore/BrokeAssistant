@@ -8,12 +8,10 @@ import com.example.brokeassistant.core.domain.model.TransactionType
 import com.example.brokeassistant.core.domain.repository.CategoryRepository
 import com.example.brokeassistant.core.domain.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 data class CategoryBalance(
@@ -38,35 +36,30 @@ class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(DashboardState())
-    val state: StateFlow<DashboardState> = _state.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            combine(
-                categoryRepository.getAllCategories(),
-                transactionRepository.getAllTransactions()
-            ) { categories, transactions ->
-                val balances = categories.map { category ->
-                    val categoryTxs = transactions.filter { it.categoryId == category.id }
-                    val income = categoryTxs.filter { it.type == TransactionType.INCOME }.sumOf { it.amountInCents }
-                    val expense = categoryTxs.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amountInCents }
-                    CategoryBalance(category, income - expense)
-                }
-                
-                val totalAvailable = balances.sumOf { it.balanceInCents }
-
-                DashboardState(
-                    categoryBalances = balances,
-                    totalAvailableInCents = totalAvailable,
-                    allCategories = categories,
-                    allTransactions = transactions
-                )
-            }.collect { newState ->
-                _state.value = newState
-            }
+    val state: StateFlow<DashboardState> = combine(
+        categoryRepository.getAllCategories(),
+        transactionRepository.getAllTransactions()
+    ) { categories, transactions ->
+        val balances = categories.map { category ->
+            val categoryTxs = transactions.filter { it.categoryId == category.id }
+            val income = categoryTxs.filter { it.type == TransactionType.INCOME }.sumOf { it.amountInCents }
+            val expense = categoryTxs.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amountInCents }
+            CategoryBalance(category, income - expense)
         }
-    }
+
+        val totalAvailable = balances.sumOf { it.balanceInCents }
+
+        DashboardState(
+            categoryBalances = balances,
+            totalAvailableInCents = totalAvailable,
+            allCategories = categories,
+            allTransactions = transactions
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = DashboardState()
+    )
 
     fun onIntent(intent: DashboardIntent) {
     }
