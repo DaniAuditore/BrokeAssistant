@@ -56,7 +56,8 @@
     <string name="string_delete">Delete</string>
     <string name="string_save_and_back">Save &amp; Back</string>
     <string name="string_categories_saved">Categories saved successfully</string>
-    <string name="string_deleting_requires_fallback">Deleting %1$s requires reassigning its transactions and percentage to another category.</string>
+    <string name="string_deleting_requires_fallback">Deleting %1$s will reassign its transactions to another category, but you MUST manually re-distribute its percentage to keep the total at 100%%.</string>
+    <string name="string_budget_invalid_warning">Budget plan is incomplete (Total: %1$d%%). Please adjust categories to reach 100%% to enable income distribution.</string>
     <string name="string_select_fallback">Select a fallback</string>
     <string name="string_fallback_category">Fallback Category</string>
 </resources>

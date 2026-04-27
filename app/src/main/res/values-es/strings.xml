@@ -56,7 +56,9 @@
     <string name="string_delete">Eliminar</string>
     <string name="string_save_and_back">Guardar y Volver</string>
     <string name="string_categories_saved">Categorías guardadas exitosamente</string>
-    <string name="string_deleting_requires_fallback">Eliminar %1$s requiere reasignar sus transacciones y porcentaje a otra categoría.</string>
+    <string name="string_deleting_requires_fallback">Borrar %1$s reasignará sus transacciones, pero DEBES re-distribuir su porcentaje manualmente para mantener el total al 100%%.</string>
+    <string name="string_budget_invalid_warning">El plan de presupuesto está incompleto (Total: %1$d%%). Por favor ajusta las categorías al 100%% para habilitar el reparto de ingresos.</string>
+
     <string name="string_select_fallback">Selecciona un respaldo</string>
     <string name="string_fallback_category">Categoría de Respaldo</string>
 </resources>
