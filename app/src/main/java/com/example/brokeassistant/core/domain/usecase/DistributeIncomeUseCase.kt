@@ -18,7 +18,10 @@ class DistributeIncomeUseCase @Inject constructor(
     ): List<Transaction> {
         require(amountInCents > 0) { "Income amount must be greater than zero" }
         require(categories.isNotEmpty()) { "Categories list cannot be empty" }
-        require(categories.sumOf { it.percentage } == 100) { "Category percentages must sum up exactly to 100" }
+        
+        if (categories.sumOf { it.percentage } != 100) {
+            return emptyList()
+        }
 
         val transactions = mutableListOf<Transaction>()
         var remainingCents = amountInCents

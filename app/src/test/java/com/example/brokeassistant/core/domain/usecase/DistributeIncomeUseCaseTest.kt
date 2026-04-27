@@ -3,6 +3,7 @@ package com.example.brokeassistant.core.domain.usecase
 import com.example.brokeassistant.core.domain.model.Category
 import com.example.brokeassistant.core.domain.model.TransactionType
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.time.Clock
@@ -98,20 +99,15 @@ class DistributeIncomeUseCaseTest {
     }
 
     @Test
-    fun `invoke creates transaction models correctly`() {
+    fun `invoke with total percentage not 100 returns empty list`() {
         val categories = listOf(
-            Category(id = 1, name = "Savings", percentage = 100)
+            Category(id = 1, name = "Savings", percentage = 30),
+            Category(id = 2, name = "Food", percentage = 30)
+            // Total = 60
         )
-        val amount = 500L
-        val desc = "Paycheck"
-        val transactions = useCase(amount, desc, categories, date)
+        val amount = 1000L
+        val transactions = useCase(amount, "Paycheck", categories, date)
 
-        assertEquals(1, transactions.size)
-        val tx = transactions.first()
-        assertEquals(1L, tx.categoryId)
-        assertEquals(TransactionType.INCOME, tx.type)
-        assertEquals(500L, tx.amountInCents)
-        assertEquals("$desc - Savings", tx.description)
-        assertEquals(date, tx.date)
+        assertTrue(transactions.isEmpty())
     }
 }
