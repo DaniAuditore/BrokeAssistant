@@ -42,6 +42,7 @@
     <string name="string_transaction_saved">Transacción guardada exitosamente</string>
     <string name="string_type_expense">Gasto</string>
     <string name="string_type_income">Ingreso</string>
+    <string name="string_type_direct_deposit">Depósito Directo</string>
 
     <!-- Categories Screen -->
     <string name="string_categories_management">Gestión de Categorías</string>
