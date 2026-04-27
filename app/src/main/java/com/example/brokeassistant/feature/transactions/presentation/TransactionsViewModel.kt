@@ -25,7 +25,9 @@ data class TransactionsState(
     val amount: String = "",
     val description: String = "",
     val categories: List<Category> = emptyList(),
-    val selectedCategory: Category? = null
+    val selectedCategory: Category? = null,
+    val totalPercentage: Int = 0,
+    val isBudgetValid: Boolean = false
 )
 
 sealed class TransactionsIntent {
@@ -64,12 +66,15 @@ class TransactionsViewModel @Inject constructor(
         categoryRepository.getAllCategories(),
         _userInputs
     ) { categories, inputs ->
+        val totalPct = categories.sumOf { it.percentage }
         TransactionsState(
             transactionType = inputs.transactionType,
             amount = inputs.amount,
             description = inputs.description,
             categories = categories,
-            selectedCategory = inputs.selectedCategory ?: categories.firstOrNull()
+            selectedCategory = inputs.selectedCategory ?: categories.firstOrNull(),
+            totalPercentage = totalPct,
+            isBudgetValid = totalPct == 100
         )
     }.stateIn(
         scope = viewModelScope,

@@ -50,6 +50,22 @@ fun TransactionsScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (!state.isBudgetValid) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.string_budget_invalid_warning, state.totalPercentage),
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
             // Grupo 1: Categorización y Tipo (Ley de Proximidad)
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -70,7 +86,8 @@ fun TransactionsScreen(
                         FilterChip(
                             selected = state.transactionType == TransactionType.INCOME,
                             onClick = { viewModel.onIntent(TransactionsIntent.UpdateType(TransactionType.INCOME)) },
-                            label = { Text(stringResource(R.string.string_type_income)) }
+                            label = { Text(stringResource(R.string.string_type_income)) },
+                            enabled = state.isBudgetValid
                         )
                         FilterChip(
                             selected = state.transactionType == TransactionType.DIRECT_INCOME,
