@@ -88,25 +88,38 @@ class TransactionsViewModel @Inject constructor(
                     val currentState = state.value
                     val amountInCents = (currentState.amount.toDoubleOrNull()?.times(100))?.toLong() ?: 0L
                     if (amountInCents > 0) {
-                        if (currentState.transactionType == TransactionType.INCOME) {
-                            val transactions = distributeIncomeUseCase(
-                                amountInCents = amountInCents,
-                                description = currentState.description,
-                                categories = currentState.categories,
-                                date = LocalDateTime.now(clock)
-                            )
-                            transactions.forEach { tx ->
+                        when (currentState.transactionType) {
+                            TransactionType.INCOME -> {
+                                val transactions = distributeIncomeUseCase(
+                                    amountInCents = amountInCents,
+                                    description = currentState.description,
+                                    categories = currentState.categories,
+                                    date = LocalDateTime.now(clock)
+                                )
+                                transactions.forEach { tx ->
+                                    transactionRepository.insertTransaction(tx)
+                                }
+                            }
+                            TransactionType.DIRECT_INCOME -> {
+                                val tx = Transaction(
+                                    categoryId = currentState.selectedCategory?.id,
+                                    type = TransactionType.DIRECT_INCOME,
+                                    amountInCents = amountInCents,
+                                    description = currentState.description,
+                                    date = LocalDateTime.now(clock)
+                                )
                                 transactionRepository.insertTransaction(tx)
                             }
-                        } else {
-                            val tx = Transaction(
-                                categoryId = currentState.selectedCategory?.id,
-                                type = TransactionType.EXPENSE,
-                                amountInCents = amountInCents,
-                                description = currentState.description,
-                                date = LocalDateTime.now(clock)
-                            )
-                            transactionRepository.insertTransaction(tx)
+                            TransactionType.EXPENSE -> {
+                                val tx = Transaction(
+                                    categoryId = currentState.selectedCategory?.id,
+                                    type = TransactionType.EXPENSE,
+                                    amountInCents = amountInCents,
+                                    description = currentState.description,
+                                    date = LocalDateTime.now(clock)
+                                )
+                                transactionRepository.insertTransaction(tx)
+                            }
                         }
                         // Reset form
                         _userInputs.update { it.copy(amount = "", description = "") }
