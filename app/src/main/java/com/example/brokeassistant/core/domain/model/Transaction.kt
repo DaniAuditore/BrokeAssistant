@@ -2,7 +2,7 @@ package com.example.brokeassistant.core.domain.model
 
 import java.time.LocalDateTime
 
-enum class TransactionType { INCOME, EXPENSE }
+enum class TransactionType { INCOME, EXPENSE, DIRECT_INCOME }
 
 data class Transaction(
     val id: Long = 0,
