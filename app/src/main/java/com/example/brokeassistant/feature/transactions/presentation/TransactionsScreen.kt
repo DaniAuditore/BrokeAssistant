@@ -72,9 +72,14 @@ fun TransactionsScreen(
                             onClick = { viewModel.onIntent(TransactionsIntent.UpdateType(TransactionType.INCOME)) },
                             label = { Text(stringResource(R.string.string_type_income)) }
                         )
+                        FilterChip(
+                            selected = state.transactionType == TransactionType.DIRECT_INCOME,
+                            onClick = { viewModel.onIntent(TransactionsIntent.UpdateType(TransactionType.DIRECT_INCOME)) },
+                            label = { Text(stringResource(R.string.string_type_direct_deposit)) }
+                        )
                     }
 
-                    if (state.transactionType == TransactionType.EXPENSE) {
+                    if (state.transactionType == TransactionType.EXPENSE || state.transactionType == TransactionType.DIRECT_INCOME) {
                         Spacer(modifier = Modifier.height(8.dp))
                         ExposedDropdownMenuBox(
                             expanded = expanded,
@@ -152,7 +157,10 @@ fun TransactionsScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            val isSaveEnabled = state.amount.isNotBlank() && !isAmountInvalid && state.description.isNotBlank() && (state.transactionType == TransactionType.INCOME || state.selectedCategory != null)
+            val isSaveEnabled = state.amount.isNotBlank() && 
+                               !isAmountInvalid && 
+                               state.description.isNotBlank() && 
+                               (state.transactionType == TransactionType.INCOME || state.selectedCategory != null)
 
             val savedMsg = stringResource(R.string.string_transaction_saved)
             Button(
