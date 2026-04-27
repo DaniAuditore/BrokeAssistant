@@ -36,8 +36,12 @@ interface CategoryDao {
 
     @androidx.room.Transaction
     suspend fun deleteCategoryWithFallback(deletedId: Int, fallbackId: Int) {
-        val deletedCategory = getCategoryById(deletedId) ?: return
-        val fallbackCategory = getCategoryById(fallbackId) ?: return
+        val deletedCategory = getCategoryById(deletedId) 
+            ?: throw IllegalArgumentException("Category to delete (id=$deletedId) not found")
+        val fallbackCategory = getCategoryById(fallbackId)
+            ?: throw IllegalArgumentException("Fallback category (id=$fallbackId) not found")
+
+        println("Starting category migration: Deleting $deletedId, moving to $fallbackId")
 
         // Merge percentages
         val newPercentage = fallbackCategory.percentage + deletedCategory.percentage
