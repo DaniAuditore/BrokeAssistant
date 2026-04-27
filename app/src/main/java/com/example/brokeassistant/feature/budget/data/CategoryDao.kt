@@ -43,10 +43,6 @@ interface CategoryDao {
 
         println("Starting category migration: Deleting $deletedId, moving to $fallbackId")
 
-        // Merge percentages
-        val newPercentage = fallbackCategory.percentage + deletedCategory.percentage
-        updateCategory(fallbackCategory.copy(percentage = newPercentage))
-
         // Reassign transactions
         reassignTransactions(deletedId, fallbackId)
 
